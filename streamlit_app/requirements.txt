@@ -1,0 +1,11 @@
+# Dev environment
+pip
+autopep8
+
+# App
+flask
+streamlit
+joblib
+plotly-express
+scikit-learn
+imblearn

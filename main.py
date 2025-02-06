@@ -40,6 +40,13 @@ def predict():
             st.write("Load dataset...")
             # Load the uploaded data
             new_data = pd.read_csv(uploaded_file)
+
+
+            # simpan dan drop kolom name disini
+            name = new_data['name']
+            departement = new_data['department']
+            new_data = new_data.drop(columns=['name'])
+            
             time.sleep(2)
 
             st.write("Preprocessing data...")
@@ -84,16 +91,30 @@ def predict():
 
         # Tampilkan pie chart di Streamlit
         st.plotly_chart(fig)
-        
+
+        new_data = new_data.drop(columns=[col for col in new_data.columns if col not in ['name', 'is_promoted']])
+        new_data.rename(columns={"is_promoted": "status"}, inplace=True)
+
+        new_data['name'] = name
+        new_data['department'] = departement
+        new_data["status"] = new_data["status"].apply(lambda x: "Dipromosikan" if x == 1 else "Tidak Dipromosikan")
+
+        new_data = new_data[['name', 'department', 'status']]
+
+        # sort yang dipromosikan ada dipaling atas dan kasih background hijau, jika tidak merah
+        new_data = new_data.sort_values(by='status')
+
         # Display the predictions
         st.write("Hasil Prediksi:")
+
+        
         st.write(new_data)
         
         # Download the predictions as a CSV file
         st.download_button(
             label="Download Hasil Prediksi",
             data=new_data.to_csv(index=False).encode('utf-8'),
-            file_name='predictions.csv',
+            file_name='hasil_prediction.csv',
             mime='text/csv',
         )
 
